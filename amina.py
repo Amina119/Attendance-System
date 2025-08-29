@@ -1,0 +1,1 @@
+print("Trail attendance system")
