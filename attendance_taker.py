@@ -173,3 +173,15 @@ class Face_Recognizer:
             cursor.execute("INSERT INTO attendance (name, time, date) VALUES (?, ?, ?)", (name, current_time, current_date))
             conn.commit()
             print(f"{name} marked as present for {current_date} at {current_time}")
+
+        conn.close()
+
+    #  Face detection and recognition wit OT from input video stream
+    def process(self, stream):
+        # 1.  Get faces known from "features.all.csv"
+        if self.get_face_database():
+            while stream.isOpened():
+                self.frame_cnt += 1
+                logging.debug("Frame " + str(self.frame_cnt) + " starts")
+                flag, img_rd = stream.read()
+                kk = cv2.waitKey(1)
