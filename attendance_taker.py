@@ -209,3 +209,20 @@ class Face_Recognizer:
 
                     if "unknown" in self.current_frame_face_name_list:
                         self.reclassify_interval_cnt += 1
+
+                    if self.current_frame_face_cnt != 0:
+                        for k, d in enumerate(faces):
+                            self.current_frame_face_position_list.append(tuple(
+                                [faces[k].left(), int(faces[k].bottom() + (faces[k].bottom() - faces[k].top()) / 4)]))
+                            self.current_frame_face_centroid_list.append(
+                                [int(faces[k].left() + faces[k].right()) / 2,
+                                 int(faces[k].top() + faces[k].bottom()) / 2])
+
+                            img_rd = cv2.rectangle(img_rd,
+                                                   tuple([d.left(), d.top()]),
+                                                   tuple([d.right(), d.bottom()]),
+                                                   (255, 255, 255), 2)
+
+                    #  Multi-faces in current frame, use centroid-tracker to track
+                    if self.current_frame_face_cnt != 1:
+                        self.centroid_tracker()
