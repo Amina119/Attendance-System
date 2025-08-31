@@ -283,3 +283,58 @@ class Face_Recognizer:
                                 else:
                                     #  person_X
                                     self.current_frame_face_X_e_distance_list.append(999999999)
+
+                            # 6.2.2.4 / Find the one with minimum e distance
+                            similar_person_num = self.current_frame_face_X_e_distance_list.index(
+                                min(self.current_frame_face_X_e_distance_list))
+
+                            if min(self.current_frame_face_X_e_distance_list) < 0.4:
+                                self.current_frame_face_name_list[k] = self.face_name_known_list[similar_person_num]
+                                logging.debug("  Face recognition result: %s",
+                                              self.face_name_known_list[similar_person_num])
+                                
+                                # Insert attendance record
+                                nam =self.face_name_known_list[similar_person_num]
+
+                                print(type(self.face_name_known_list[similar_person_num]))
+                                print(nam)
+                                self.attendance(nam)
+                            else:
+                                logging.debug("  Face recognition result: Unknown person")
+
+                        # 7.  / Add note on cv2 window
+                        self.draw_note(img_rd)
+
+                # 8.  'q'  / Press 'q' to exit
+                if kk == ord('q'):
+                    break
+
+                self.update_fps()
+                cv2.namedWindow("camera", 1)
+                cv2.imshow("camera", img_rd)
+
+                logging.debug("Frame ends\n\n")
+
+    
+
+
+    def run(self):
+        # cap = cv2.VideoCapture("video.mp4")  # Get video stream from video file
+        cap = cv2.VideoCapture(0)              # Get video stream from camera
+        self.process(cap)
+
+        cap.release()
+        cv2.destroyAllWindows()
+    
+   
+
+
+def main():
+    # logging.basicConfig(level=logging.DEBUG) # Set log level to 'logging.DEBUG' to print debug info of every frame
+    logging.basicConfig(level=logging.INFO)
+    Face_Recognizer_con = Face_Recognizer()
+    Face_Recognizer_con.run()
+
+
+if __name__ == '__main__':
+    main()
