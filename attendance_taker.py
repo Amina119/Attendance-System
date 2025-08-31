@@ -185,3 +185,17 @@ class Face_Recognizer:
                 logging.debug("Frame " + str(self.frame_cnt) + " starts")
                 flag, img_rd = stream.read()
                 kk = cv2.waitKey(1)
+
+                # 2.  Detect faces for frame X
+                faces = detector(img_rd, 0)
+
+                # 3.  Update cnt for faces in frames
+                self.last_frame_face_cnt = self.current_frame_face_cnt
+                self.current_frame_face_cnt = len(faces)
+
+                # 4.  Update the face name list in last frame
+                self.last_frame_face_name_list = self.current_frame_face_name_list[:]
+
+                # 5.  update frame centroid list
+                self.last_frame_face_centroid_list = self.current_frame_face_centroid_list
+                self.current_frame_face_centroid_list = []
