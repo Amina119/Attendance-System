@@ -97,4 +97,26 @@ class Face_Recognizer:
                 self.face_features_known_list.append(features_someone_arr)
             logging.info("Faces in Database： %d", len(self.face_features_known_list))
             return 1
-       
+        else:
+            logging.warning("'features_all.csv' not found!")
+            logging.warning("Please run 'get_faces_from_camera.py' "
+                            "and 'features_extraction_to_csv.py' before 'face_reco_from_camera.py'")
+            return 0
+
+    def update_fps(self):
+        now = time.time()
+        # Refresh fps per second
+        if str(self.start_time).split(".")[0] != str(now).split(".")[0]:
+            self.fps_show = self.fps
+        self.start_time = now
+        self.frame_time = now - self.frame_start_time
+        self.fps = 1.0 / self.frame_time
+        self.frame_start_time = now
+
+    @staticmethod
+    # / Compute the e-distance between two 128D features
+    def return_euclidean_distance(feature_1, feature_2):
+        feature_1 = np.array(feature_1)
+        feature_2 = np.array(feature_2)
+        dist = np.sqrt(np.sum(np.square(feature_1 - feature_2)))
+        return dist
