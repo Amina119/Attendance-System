@@ -120,3 +120,40 @@ class Face_Recognizer:
         feature_2 = np.array(feature_2)
         dist = np.sqrt(np.sum(np.square(feature_1 - feature_2)))
         return dist
+
+    # / Use centroid tracker to link face_x in current frame with person_x in last frame
+    def centroid_tracker(self):
+        for i in range(len(self.current_frame_face_centroid_list)):
+            e_distance_current_frame_person_x_list = []
+            #  For object 1 in current_frame, compute e-distance with object 1/2/3/4/... in last frame
+            for j in range(len(self.last_frame_face_centroid_list)):
+                self.last_current_frame_centroid_e_distance = self.return_euclidean_distance(
+                    self.current_frame_face_centroid_list[i], self.last_frame_face_centroid_list[j])
+
+                e_distance_current_frame_person_x_list.append(
+                    self.last_current_frame_centroid_e_distance)
+
+            last_frame_num = e_distance_current_frame_person_x_list.index(
+                min(e_distance_current_frame_person_x_list))
+            self.current_frame_face_name_list[i] = self.last_frame_face_name_list[last_frame_num]
+
+    #  cv2 window / putText on cv2 window
+    def draw_note(self, img_rd):
+        #  / Add some info on windows
+        cv2.putText(img_rd, "Face Recognizer with Deep Learning", (20, 40), self.font, 1, (255, 255, 255), 1, cv2.LINE_AA)
+        cv2.putText(img_rd, "Frame:  " + str(self.frame_cnt), (20, 100), self.font, 0.8, (0, 255, 0), 1,
+                    cv2.LINE_AA)
+        cv2.putText(img_rd, "FPS:    " + str(self.fps.__round__(2)), (20, 130), self.font, 0.8, (0, 255, 0), 1,
+                    cv2.LINE_AA)
+        cv2.putText(img_rd, "Faces:  " + str(self.current_frame_face_cnt), (20, 160), self.font, 0.8, (0, 255, 0), 1,
+                    cv2.LINE_AA)
+        cv2.putText(img_rd, "Q: Quit", (20, 450), self.font, 0.8, (255, 255, 255), 1, cv2.LINE_AA)
+
+        for i in range(len(self.current_frame_face_name_list)):
+            img_rd = cv2.putText(img_rd, "Face_" + str(i + 1), tuple(
+                [int(self.current_frame_face_centroid_list[i][0]), int(self.current_frame_face_centroid_list[i][1])]),
+                                 self.font,
+                                 0.8, (255, 190, 0),
+                                 1,
+                                 cv2.LINE_AA)
+    # insert data in database
