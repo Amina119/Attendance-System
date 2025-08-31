@@ -199,3 +199,13 @@ class Face_Recognizer:
                 # 5.  update frame centroid list
                 self.last_frame_face_centroid_list = self.current_frame_face_centroid_list
                 self.current_frame_face_centroid_list = []
+
+                # 6.1  if cnt not changes
+                if (self.current_frame_face_cnt == self.last_frame_face_cnt) and (
+                        self.reclassify_interval_cnt != self.reclassify_interval):
+                    logging.debug("scene 1:   No face cnt changes in this frame!!!")
+
+                    self.current_frame_face_position_list = []
+
+                    if "unknown" in self.current_frame_face_name_list:
+                        self.reclassify_interval_cnt += 1
