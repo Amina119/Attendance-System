@@ -269,3 +269,17 @@ class Face_Recognizer:
                             # 6.2.2.2  Positions of faces captured
                             self.current_frame_face_position_list.append(tuple(
                                 [faces[k].left(), int(faces[k].bottom() + (faces[k].bottom() - faces[k].top()) / 4)]))
+
+                            # 6.2.2.3 
+                            # For every faces detected, compare the faces in the database
+                            for i in range(len(self.face_features_known_list)):
+                                # 
+                                if str(self.face_features_known_list[i][0]) != '0.0':
+                                    e_distance_tmp = self.return_euclidean_distance(
+                                        self.current_frame_face_feature_list[k],
+                                        self.face_features_known_list[i])
+                                    logging.debug("      with person %d, the e-distance: %f", i + 1, e_distance_tmp)
+                                    self.current_frame_face_X_e_distance_list.append(e_distance_tmp)
+                                else:
+                                    #  person_X
+                                    self.current_frame_face_X_e_distance_list.append(999999999)
