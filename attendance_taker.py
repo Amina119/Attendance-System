@@ -226,3 +226,46 @@ class Face_Recognizer:
                     #  Multi-faces in current frame, use centroid-tracker to track
                     if self.current_frame_face_cnt != 1:
                         self.centroid_tracker()
+
+                    for i in range(self.current_frame_face_cnt):
+                        # 6.2 Write names under ROI
+                        img_rd = cv2.putText(img_rd, self.current_frame_face_name_list[i],
+                                             self.current_frame_face_position_list[i], self.font, 0.8, (0, 255, 255), 1,
+                                             cv2.LINE_AA)
+                    self.draw_note(img_rd)
+
+                # 6.2  If cnt of faces changes, 0->1 or 1->0 or ...
+                else:
+                    logging.debug("scene 2: / Faces cnt changes in this frame")
+                    self.current_frame_face_position_list = []
+                    self.current_frame_face_X_e_distance_list = []
+                    self.current_frame_face_feature_list = []
+                    self.reclassify_interval_cnt = 0
+
+                    # 6.2.1  Face cnt decreases: 1->0, 2->1, ...
+                    if self.current_frame_face_cnt == 0:
+                        logging.debug("  / No faces in this frame!!!")
+                        # clear list of names and features
+                        self.current_frame_face_name_list = []
+                    # 6.2.2 / Face cnt increase: 0->1, 0->2, ..., 1->2, ...
+                    else:
+                        logging.debug("  scene 2.2  Get faces in this frame and do face recognition")
+                        self.current_frame_face_name_list = []
+                        for i in range(len(faces)):
+                            shape = predictor(img_rd, faces[i])
+                            self.current_frame_face_feature_list.append(
+                                face_reco_model.compute_face_descriptor(img_rd, shape))
+                            self.current_frame_face_name_list.append("unknown")
+
+                        # 6.2.2.1 Traversal all the faces in the database
+                        for k in range(len(faces)):
+                            logging.debug("  For face %d in current frame:", k + 1)
+                            self.current_frame_face_centroid_list.append(
+                                [int(faces[k].left() + faces[k].right()) / 2,
+                                 int(faces[k].top() + faces[k].bottom()) / 2])
+
+                            self.current_frame_face_X_e_distance_list = []
+
+                            # 6.2.2.2  Positions of faces captured
+                            self.current_frame_face_position_list.append(tuple(
+                                [faces[k].left(), int(faces[k].bottom() + (faces[k].bottom() - faces[k].top()) / 4)]))
