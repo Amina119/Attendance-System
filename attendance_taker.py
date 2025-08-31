@@ -27,3 +27,35 @@ current_date = datetime.datetime.now().strftime("%Y_%m_%d")  # Replace hyphens w
 table_name = "attendance" 
 create_table_sql = f"CREATE TABLE IF NOT EXISTS {table_name} (name TEXT, time TEXT, date DATE, UNIQUE(name, date))"
 cursor.execute(create_table_sql)
+
+
+# Commit changes and close the connection
+
+conn.commit()
+conn.close()
+
+
+class Face_Recognizer:
+    def __init__(self):
+        self.font = cv2.FONT_ITALIC
+
+        # FPS
+        self.frame_time = 0
+        self.frame_start_time = 0
+        self.fps = 0
+        self.fps_show = 0
+        self.start_time = time.time()
+
+        # cnt for frame
+        self.frame_cnt = 0
+
+        #  Save the features of faces in the database
+        self.face_features_known_list = []
+        # / Save the name of faces in the database
+        self.face_name_known_list = []
+
+        #  List to save centroid positions of ROI in frame N-1 and N
+        self.last_frame_face_centroid_list = []
+        self.current_frame_face_centroid_list = []
+
+       
